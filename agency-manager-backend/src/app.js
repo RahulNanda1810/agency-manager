@@ -17,7 +17,17 @@ const dailySummaryRoutes = require("./routes/daily-summary.routes");
 
 const app = express();
 
-app.use(cors());
+// Configure CORS to allow frontend domains
+const corsOptions = {
+  origin: [
+    'http://localhost:4200',
+    'https://agency-managern.netlify.app'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Debug middleware
