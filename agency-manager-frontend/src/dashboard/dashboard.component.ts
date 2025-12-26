@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
 
     // Load task statistics
-    this.http.get<any>('http://localhost:5000/tasks/my-stats').subscribe({
+    this.http.get<any>(environment.apiUrl + '/tasks/my-stats').subscribe({
       next: (stats) => {
         this.stats = stats;
       },
@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit {
     });
 
     // Load recent tasks
-    this.http.get<any[]>('http://localhost:5000/tasks/my-tasks').subscribe({
+    this.http.get<any[]>(environment.apiUrl + '/tasks/my-tasks').subscribe({
       next: (tasks) => {
         this.recentTasks = tasks.slice(0, 5); // Get first 5 tasks
         this.loading = false;

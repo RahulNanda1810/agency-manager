@@ -82,9 +82,9 @@ export class ProjectDetailComponent implements OnInit {
     console.log('🔍 Loading details for:', { orgId: this.orgId, clientId: this.clientId, projectId: this.projectId });
     
     forkJoin({
-      project: this.http.get<any>(`http://localhost:5000/projects/${this.projectId}`),
-      client: this.http.get<any>(`http://localhost:5000/clients/${this.clientId}`),
-      orgs: this.http.get<any[]>(`http://localhost:5000/orgs`)
+      project: this.http.get<any>(`${environment.apiUrl}/projects/${this.projectId}`),
+      client: this.http.get<any>(`${environment.apiUrl}/clients/${this.clientId}`),
+      orgs: this.http.get<any[]>(`${environment.apiUrl}/orgs`)
     }).subscribe({
       next: (results) => {
         console.log('✅ Loaded all details:', results);
@@ -115,7 +115,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadSprints() {
-    this.http.get<any[]>(`http://localhost:5000/api/projects/${this.projectId}/sprints`)
+    this.http.get<any[]>(`${environment.apiUrl}/api/projects/${this.projectId}/sprints`)
       .subscribe({
         next: (sprints) => {
           this.sprints = sprints;
@@ -128,7 +128,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadAllTasks() {
-    this.http.get<any[]>(`http://localhost:5000/tasks?projectId=${this.projectId}`)
+    this.http.get<any[]>(`${environment.apiUrl}/tasks?projectId=${this.projectId}`)
       .subscribe({
         next: (tasks) => {
           this.unassignedTasks = tasks.filter(t => !t.sprintId);
@@ -150,7 +150,7 @@ export class ProjectDetailComponent implements OnInit {
   addTaskToSprint() {
     if (!this.taskToAdd || !this.selectedSprint) return;
 
-    this.http.put(`http://localhost:5000/tasks/${this.taskToAdd}`, { sprintId: this.selectedSprint._id })
+    this.http.put(`${environment.apiUrl}/tasks/${this.taskToAdd}`, { sprintId: this.selectedSprint._id })
       .subscribe({
         next: () => {
           this.taskToAdd = '';
@@ -169,7 +169,7 @@ export class ProjectDetailComponent implements OnInit {
       sprintId: this.selectedSprint._id
     };
 
-    this.http.post<any>('http://localhost:5000/tasks', taskData)
+    this.http.post<any>(environment.apiUrl + '/tasks', taskData)
       .subscribe({
         next: (newTask) => {
           console.log('✅ Task created:', newTask);
@@ -185,7 +185,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   removeTaskFromSprint(task: any) {
-    this.http.put(`http://localhost:5000/tasks/${task._id}`, { sprintId: null })
+    this.http.put(`${environment.apiUrl}/tasks/${task._id}`, { sprintId: null })
       .subscribe({
         next: () => {
           this.loadAllTasks();
@@ -209,7 +209,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   onSprintCreated(sprintData: any) {
-    this.http.post(`http://localhost:5000/api/projects/${this.projectId}/sprints`, sprintData)
+    this.http.post(`${environment.apiUrl}/api/projects/${this.projectId}/sprints`, sprintData)
       .subscribe({
         next: () => {
           console.log('✅ Sprint created successfully');
@@ -223,7 +223,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   startSprint(sprint: any) {
-    this.http.patch(`http://localhost:5000/api/projects/${this.projectId}/sprints/${sprint._id}/start`, {})
+    this.http.patch(`${environment.apiUrl}/api/projects/${this.projectId}/sprints/${sprint._id}/start`, {})
       .subscribe({
         next: () => {
           alert('Sprint started!');
@@ -235,7 +235,7 @@ export class ProjectDetailComponent implements OnInit {
 
   completeSprint(sprint: any) {
     if (confirm('Complete this sprint? Incomplete tasks will be moved to backlog.')) {
-      this.http.patch(`http://localhost:5000/api/projects/${this.projectId}/sprints/${sprint._id}/complete`, {})
+      this.http.patch(`${environment.apiUrl}/api/projects/${this.projectId}/sprints/${sprint._id}/complete`, {})
         .subscribe({
           next: () => {
             alert('Sprint completed!');

@@ -66,7 +66,7 @@ export class OrganizationDetailComponent implements OnInit {
   }
 
   loadMembers() {
-    this.http.get<any[]>(`http://localhost:5000/orgs/${this.orgId}/members`)
+    this.http.get<any[]>(`${environment.apiUrl}/orgs/${this.orgId}/members`)
       .subscribe({
         next: (members) => {
           this.members = members;
@@ -87,7 +87,7 @@ export class OrganizationDetailComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    this.http.post(`http://localhost:5000/orgs/${this.orgId}/members`, {
+    this.http.post(`${environment.apiUrl}/orgs/${this.orgId}/members`, {
       email: this.newMemberEmail,
       role: this.newMemberRole
     }).subscribe({
@@ -107,7 +107,7 @@ export class OrganizationDetailComponent implements OnInit {
   removeMember(member: any) {
     if (!confirm(`Remove ${member.email} from this organization?`)) return;
 
-    this.http.delete(`http://localhost:5000/orgs/${this.orgId}/members/${member.userId}`)
+    this.http.delete(`${environment.apiUrl}/orgs/${this.orgId}/members/${member.userId}`)
       .subscribe({
         next: () => {
           this.members = this.members.filter(m => m._id !== member._id);
@@ -130,7 +130,7 @@ export class OrganizationDetailComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.http.post<any>(`http://localhost:5000/orgs/${this.orgId}/invitations`, {
+    this.http.post<any>(`${environment.apiUrl}/orgs/${this.orgId}/invitations`, {
       email: this.inviteEmail,
       role: this.inviteRole
     }).subscribe({
@@ -149,7 +149,7 @@ export class OrganizationDetailComponent implements OnInit {
   }
 
   loadInvitations() {
-    this.http.get<any[]>(`http://localhost:5000/orgs/${this.orgId}/invitations`)
+    this.http.get<any[]>(`${environment.apiUrl}/orgs/${this.orgId}/invitations`)
       .subscribe({
         next: (invitations) => {
           this.invitations = invitations;
@@ -159,7 +159,7 @@ export class OrganizationDetailComponent implements OnInit {
   }
 
   loadAccessRequests() {
-    this.http.get<any[]>(`http://localhost:5000/orgs/${this.orgId}/access-requests`)
+    this.http.get<any[]>(`${environment.apiUrl}/orgs/${this.orgId}/access-requests`)
       .subscribe({
         next: (requests) => {
           this.accessRequests = requests;
@@ -171,7 +171,7 @@ export class OrganizationDetailComponent implements OnInit {
   respondToRequest(request: any, action: 'approve' | 'reject') {
     const role = action === 'approve' ? 'member' : undefined;
     
-    this.http.post(`http://localhost:5000/orgs/${this.orgId}/access-requests/${request._id}`, {
+    this.http.post(`${environment.apiUrl}/orgs/${this.orgId}/access-requests/${request._id}`, {
       action,
       role
     }).subscribe({

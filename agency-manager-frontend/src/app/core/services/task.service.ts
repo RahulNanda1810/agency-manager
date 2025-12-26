@@ -1,12 +1,13 @@
 // agency-manager-frontend/src/app/core/services/task.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
   private http = inject(HttpClient);
-  private API = 'http://localhost:5000/tasks';
-  private apiUrl = 'http://localhost:5000/api';
+  private API = `${environment.apiUrl}/tasks`;
+  private apiUrl = `${environment.apiUrl}/api`;
 
   getTasks(projectId: string, status?: string, assigneeId?: string) {
     let url = `${this.API}?projectId=${projectId}`;

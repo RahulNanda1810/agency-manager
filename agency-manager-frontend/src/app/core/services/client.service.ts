@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   private http = inject(HttpClient);
-  private API = 'http://localhost:5000/clients';
+  private API = `${environment.apiUrl}/clients`;
 
   getClients(orgId: string) {
     return this.http.get<any[]>(`${this.API}?orgId=${orgId}`);

@@ -48,6 +48,6 @@ export class RegisterComponent {
   authRegisterApi(data: { name: string; email: string; password: string }) {
     // Directly use HttpClient since AuthService does not have register()
     // You can move this to AuthService if preferred
-    return this.auth['http'].post<any>('http://localhost:5000/auth/register', data);
+    return this.auth['http'].post<any>(environment.apiUrl + '/auth/register', data);
   }
 }

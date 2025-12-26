@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class TaskCommentService {
   private http = inject(HttpClient);
-  private API = 'http://localhost:5000/comments';
+  private API = environment.apiUrl + '/comments';
 
   getComments(taskId: string) {
     return this.http.get<any[]>(`${this.API}?taskId=${taskId}`);

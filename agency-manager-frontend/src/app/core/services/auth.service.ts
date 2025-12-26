@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, CanActivateFn } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private API = 'http://localhost:5000/auth';
+  private API = `${environment.apiUrl}/auth`;
 
   login(data: any) {
     return this.http.post<any>(`${this.API}/login`, data);

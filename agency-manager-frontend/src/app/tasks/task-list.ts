@@ -53,7 +53,7 @@ export class TaskListComponent {
   }
 
   loadMembers() {
-    this.http.get<any[]>(`http://localhost:5000/orgs/${this.orgId}/members`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/orgs/${this.orgId}/members`).subscribe({
       next: (members) => {
         this.members = members;
       },

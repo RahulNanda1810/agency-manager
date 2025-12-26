@@ -36,7 +36,7 @@ export class MyTasksComponent implements OnInit {
   loadMyTasks() {
     this.loading = true;
     
-    this.http.get<any[]>(`http://localhost:5000/tasks/my-tasks`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/tasks/my-tasks`).subscribe({
       next: (tasks) => {
         console.log('✅ Tasks loaded:', tasks);
         this.tasks = tasks;
@@ -102,7 +102,7 @@ export class MyTasksComponent implements OnInit {
   }
 
   updateTaskStatus(task: any, newStatus: string) {
-    this.http.patch(`http://localhost:5000/tasks/${task._id}`, { status: newStatus })
+    this.http.patch(`${environment.apiUrl}/tasks/${task._id}`, { status: newStatus })
       .subscribe({
         next: () => {
           task.status = newStatus;

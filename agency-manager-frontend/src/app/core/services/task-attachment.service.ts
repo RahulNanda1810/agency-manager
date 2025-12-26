@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class TaskAttachmentService {
   private http = inject(HttpClient);
-  private API = 'http://localhost:5000/attachments';
+  private API = environment.apiUrl + '/attachments';
 
   getAttachments(taskId: string) {
     return this.http.get<any[]>(`${this.API}?taskId=${taskId}`);
