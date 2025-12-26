@@ -18,31 +18,10 @@ const dailySummaryRoutes = require("./routes/daily-summary.routes");
 const app = express();
 
 // Configure CORS to allow frontend domains
-const allowedOrigins = [
-  'http://localhost:4200',
-  'https://agency-managern.netlify.app'
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or curl)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.use(cors({
+  origin: ['http://localhost:4200', 'https://agency-managern.netlify.app'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Debug middleware
