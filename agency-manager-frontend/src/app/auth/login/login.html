@@ -1,0 +1,28 @@
+
+<div class="app-shell">
+  <div class="login-container">
+    <h2>Login</h2>
+
+    <input
+      type="email"
+      placeholder="Email"
+      [(ngModel)]="email"
+    />
+
+    <input
+      type="password"
+      placeholder="Password"
+      [(ngModel)]="password"
+    />
+
+    <button (click)="login()" [disabled]="loading">
+      {{ loading ? 'Logging in...' : 'Login' }}
+    </button>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </div>
+  <div class="register-link" style="margin-top: 1.2rem; text-align: center;">
+    <span>Don't have an account?</span>
+    <button class="btn-secondary" routerLink="/auth/register" style="margin-left: 0.5em; background: #e0e7ef; color: #1976d2; border: none;">Register</button>
+  </div>
+</div>

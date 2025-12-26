@@ -1,0 +1,128 @@
+<div class="my-tasks-container">
+  <div class="page-header">
+    <h1>My Tasks</h1>
+    <p class="subtitle">All tasks assigned to you across all projects</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search tasks..."
+        class="search-input">
+    </div>
+    
+    <div class="filter-group">
+      <label>Status:</label>
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()" class="filter-select">
+        <option value="all">All</option>
+        <option value="todo">To Do</option>
+        <option value="in-progress">In Progress</option>
+        <option value="in-review">In Review</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your tasks...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h3>No tasks found</h3>
+    <p *ngIf="searchQuery || statusFilter !== 'all'">Try adjusting your filters</p>
+    <p *ngIf="!searchQuery && statusFilter === 'all'">You don't have any tasks assigned yet</p>
+  </div>
+
+  <!-- Tasks List -->
+  <div *ngIf="!loading && filteredTasks.length > 0" class="tasks-grid">
+    <div *ngFor="let task of filteredTasks" class="task-card">
+      <div class="task-header">
+        <h3 class="task-title">{{ task.title }}</h3>
+        <div class="task-badges">
+          <span class="status-badge" [style.background-color]="getStatusColor(task.status)">
+            {{ task.status }}
+          </span>
+          <span *ngIf="task.priority" class="priority-badge" [style.background-color]="getPriorityColor(task.priority)">
+            {{ task.priority }}
+          </span>
+        </div>
+      </div>
+
+      <p *ngIf="task.description" class="task-description">{{ task.description }}</p>
+
+      <div class="task-meta">
+        <div class="meta-item">
+          <span class="meta-label">Organization:</span>
+          <a [routerLink]="['/organizations', task.orgId]" class="meta-link">
+            {{ task.orgName }}
+          </a>
+        </div>
+        
+        <div class="meta-item">
+          <span class="meta-label">Project:</span>
+          <a [routerLink]="['/organizations', task.orgId, 'clients', task.clientId, 'projects', task.projectId]" 
+             class="meta-link">
+            {{ task.projectName }}
+          </a>
+        </div>
+        
+        <div class="meta-item">
+          <span class="meta-label">Client:</span>
+          <span class="meta-value">{{ task.clientName }}</span>
+        </div>
+
+        <div *ngIf="task.dueDate" class="meta-item">
+          <span class="meta-label">Due:</span>
+          <span class="meta-value" [class.overdue]="isOverdue(task)">
+            {{ formatDate(task.dueDate) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="task-actions">
+        <select 
+          [(ngModel)]="task.status" 
+          (ngModelChange)="updateTaskStatus(task, $event)" 
+          class="status-select">
+          <option value="todo">To Do</option>
+          <option value="in-progress">In Progress</option>
+          <option value="in-review">In Review</option>
+          <option value="done">Done</option>
+        </select>
+        
+        <a [routerLink]="['/organizations', task.orgId, 'clients', task.clientId, 'projects', task.projectId]" 
+           class="view-project-btn">
+          View Project →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div *ngIf="!loading && tasks.length > 0" class="summary-stats">
+    <div class="stat-item">
+      <span class="stat-value">{{ tasks.length }}</span>
+      <span class="stat-label">Total Tasks</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ getTaskCountByStatus('todo') }}</span>
+      <span class="stat-label">To Do</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ getTaskCountByStatus('in-progress') }}</span>
+      <span class="stat-label">In Progress</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ getTaskCountByStatus('done') }}</span>
+      <span class="stat-label">Completed</span>
+    </div>
+  </div>
+</div>

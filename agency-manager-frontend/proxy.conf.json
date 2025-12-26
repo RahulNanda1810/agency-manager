@@ -1,0 +1,22 @@
+{
+  "/auth": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/orgs": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/clients": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/projects": {
+    "target": "http://localhost:5000",
+    "secure": false
+  },
+  "/tasks": {
+    "target": "http://localhost:5000",
+    "secure": false
+  }
+}

@@ -1,0 +1,39 @@
+<div class="project-list-container" *ngIf="clientId">
+  <h3>Projects</h3>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="project-grid">
+    <div *ngFor="let project of projects" class="project-card" (click)="goToProject(project)" tabindex="0">
+      <div class="project-card-header">
+        <h4 class="project-card-name">{{ project.name }}</h4>
+        <span class="project-actions">
+          <button class="icon-btn edit-btn" (click)="startEdit(project); $event.stopPropagation();" title="Edit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1976d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          </button>
+          <button class="icon-btn delete-btn" (click)="deleteProject(project); $event.stopPropagation();" title="Delete">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          </button>
+        </span>
+      </div>
+      <div class="project-card-body">
+        <span class="project-status" [class]="'status-' + (project.status || 'active')">
+          {{ project.status === 'completed' ? '✓ Completed' : '▶ In Progress' }}
+        </span>
+      </div>
+      <ng-container *ngIf="editingProject?._id !== project._id; else editForm">
+      </ng-container>
+      <ng-template #editForm>
+        <form [formGroup]="editProjectForm" (ngSubmit)="updateProject()" class="edit-form">
+          <input formControlName="name" />
+          <button type="submit" [disabled]="editProjectForm.invalid || loading">Save</button>
+          <button type="button" (click)="cancelEdit()">Cancel</button>
+        </form>
+      </ng-template>
+    </div>
+  </div>
+  <h4>Create Project</h4>
+  <form [formGroup]="createProjectForm" (ngSubmit)="createProject()">
+    <input formControlName="name" placeholder="Project Name" />
+    <button type="submit" [disabled]="createProjectForm.invalid || loading">Create</button>
+  </form>
+</div>

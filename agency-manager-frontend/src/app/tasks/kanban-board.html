@@ -1,0 +1,54 @@
+<!-- agency-manager-frontend/src/app/tasks/kanban-board.html -->
+<div class="kanban-board">
+  <div class="board-columns">
+    <div class="board-column" *ngFor="let column of columns">
+      <div class="column-header">
+        <h3>{{ column.title }}</h3>
+        <span class="task-count">{{ column.tasks.length }}</span>
+      </div>
+      
+      <div
+        class="task-list"
+        cdkDropList
+        [cdkDropListData]="column.tasks"
+        [id]="column.id"
+        [cdkDropListConnectedTo]="['backlog', 'todo', 'in-progress', 'in-review', 'done']"
+        (cdkDropListDropped)="drop($event, column.id)">
+        
+        <div
+          class="task-card"
+          *ngFor="let task of column.tasks"
+          cdkDrag>
+          
+          <div class="task-header">
+            <span class="task-type-icon">{{ getTaskTypeIcon(task.type) }}</span>
+            <span class="task-id">#{{ task._id.slice(-6) }}</span>
+            <span 
+              class="task-priority" 
+              [style.background-color]="getPriorityColor(task.priority)">
+            </span>
+          </div>
+          
+          <div class="task-title">{{ task.title }}</div>
+          
+          <div class="task-footer">
+            <div class="task-meta">
+              <span *ngIf="task.storyPoints" class="story-points">
+                {{ task.storyPoints }} pts
+              </span>
+              <span *ngIf="task.assigneeId" class="assignee">
+                {{ task.assigneeId.name || task.assigneeId.email }}
+              </span>
+            </div>
+            
+            <div class="task-labels">
+              <span class="label" *ngFor="let label of task.labels">
+                {{ label }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

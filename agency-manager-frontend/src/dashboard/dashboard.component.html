@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p class="subtitle">Overview of your tasks and activity</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <h3>{{ stats.total }}</h3>
+          <p>Total Tasks</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <h3>{{ stats.inProgress }}</h3>
+          <p>In Progress</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>{{ stats.done }}</h3>
+          <p>Completed</p>
+        </div>
+      </div>
+
+      <div class="stat-card" [class.alert]="stats.overdue > 0">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-content">
+          <h3>{{ stats.overdue }}</h3>
+          <p>Overdue</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="progress-section">
+      <h2>Overall Progress</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar" [style.width.%]="getCompletionPercentage()"></div>
+      </div>
+      <p class="progress-text">{{ getCompletionPercentage() }}% Complete ({{ stats.done }} / {{ stats.total }} tasks)</p>
+    </div>
+
+    <!-- Status Breakdown -->
+    <div class="status-breakdown">
+      <h2>Task Status Breakdown</h2>
+      <div class="status-chart">
+        <div class="status-bar">
+          <div class="bar-segment todo" 
+               [style.width.%]="stats.total ? (stats.todo / stats.total * 100) : 0"
+               *ngIf="stats.todo > 0">
+            <span>To Do: {{ stats.todo }}</span>
+          </div>
+          <div class="bar-segment in-progress" 
+               [style.width.%]="stats.total ? (stats.inProgress / stats.total * 100) : 0"
+               *ngIf="stats.inProgress > 0">
+            <span>In Progress: {{ stats.inProgress }}</span>
+          </div>
+          <div class="bar-segment in-review" 
+               [style.width.%]="stats.total ? (stats.inReview / stats.total * 100) : 0"
+               *ngIf="stats.inReview > 0">
+            <span>In Review: {{ stats.inReview }}</span>
+          </div>
+          <div class="bar-segment done" 
+               [style.width.%]="stats.total ? (stats.done / stats.total * 100) : 0"
+               *ngIf="stats.done > 0">
+            <span>Done: {{ stats.done }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="recent-tasks">
+      <div class="section-header">
+        <h2>Recent Tasks</h2>
+        <a routerLink="/my-tasks" class="view-all-link">View All →</a>
+      </div>
+
+      <div *ngIf="recentTasks.length === 0" class="empty-state">
+        <p>No tasks assigned to you yet</p>
+      </div>
+
+      <div *ngIf="recentTasks.length > 0" class="tasks-list">
+        <div *ngFor="let task of recentTasks" class="task-item">
+          <div class="task-info">
+            <h4>{{ task.title }}</h4>
+            <p class="task-project">{{ task.projectName }} • {{ task.clientName }}</p>
+          </div>
+          <span class="status-badge" [style.background-color]="getStatusColor(task.status)">
+            {{ task.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="actions-grid">
+        <a routerLink="/my-tasks" class="action-card">
+          <div class="action-icon">✓</div>
+          <h3>My Tasks</h3>
+          <p>View all your assigned tasks</p>
+        </a>
+        <a routerLink="/organizations" class="action-card">
+          <div class="action-icon">🏢</div>
+          <h3>Organizations</h3>
+          <p>Browse and manage organizations</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

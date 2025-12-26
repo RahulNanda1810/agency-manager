@@ -1,0 +1,17 @@
+<div class="task-attachments-container" *ngIf="taskId">
+  <h5>Attachments</h5>
+  
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  
+  <ul>
+    <li *ngFor="let attachment of attachments">
+      <a [href]="attachment.url" target="_blank">
+        {{ getFileIcon(attachment.filename) }} {{ attachment.filename }}
+      </a>
+      <button (click)="removeAttachment(attachment)">Remove</button>
+    </li>
+  </ul>
+  
+  <input type="file" (change)="addAttachment($event)" />
+</div>

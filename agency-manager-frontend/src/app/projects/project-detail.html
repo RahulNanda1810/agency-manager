@@ -1,0 +1,202 @@
+<!-- agency-manager-frontend/src/app/projects/project-detail.html -->
+<div class="project-detail-container">
+  <!-- Show loading spinner while data is being fetched -->
+  <div *ngIf="loading" style="padding: 2rem; text-align: center;">
+    <div style="font-size: 1.5rem; color: #666;">Loading project...</div>
+  </div>
+
+  <!-- Show content once loaded -->
+  <div *ngIf="!loading">
+    <div class="breadcrumb">
+      <a [routerLink]="['/organizations', orgId]" class="breadcrumb-link">{{ orgName }}</a>
+      <a [routerLink]="['/organizations', orgId, 'clients', clientId]" class="breadcrumb-link">{{ clientName }}</a>
+      <span class="breadcrumb-current">{{ projectName }}</span>
+    </div>
+
+    <div class="header-with-back">
+      <a [routerLink]="['/organizations', orgId, 'clients', clientId]" class="back-button">
+        ← Back to All Projects
+      </a>
+      <div class="project-header">
+        <h2>{{ projectName }}</h2>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button 
+        class="tab-btn"
+        [class.active]="activeTab === 'board'"
+        (click)="setActiveTab('board')">
+        📊 Board
+      </button>
+      <button 
+        class="tab-btn"
+        [class.active]="activeTab === 'list'"
+        (click)="setActiveTab('list')">
+        📋 List
+      </button>
+      <button 
+        class="tab-btn"
+        [class.active]="activeTab === 'sprints'"
+        (click)="setActiveTab('sprints')">
+        🏃 Sprints
+      </button>
+    </div>
+
+    <div class="tab-content">
+    <!-- Kanban Board View -->
+    <div *ngIf="activeTab === 'board'" class="board-view">
+      <div class="board-header">
+        <h3>Board View</h3>
+        <div class="board-controls">
+          <div *ngIf="activeSprint" class="active-sprint-badge">
+            Active Sprint: {{ activeSprint.name }}
+          </div>
+          <button 
+            *ngIf="activeSprint" 
+            class="btn-toggle"
+            (click)="toggleSprintView()">
+            {{ showSprintBoard ? '📊 Show All Tasks' : '🏃 Show Sprint Tasks' }}
+          </button>
+        </div>
+      </div>
+      <app-kanban-board 
+        [projectId]="projectId" 
+        [sprintId]="showSprintBoard ? (activeSprint?._id || '') : ''">
+      </app-kanban-board>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="activeTab === 'list'" class="list-view">
+      <app-task-list [projectId]="projectId" [orgId]="orgId"></app-task-list>
+    </div>
+
+    <!-- Sprints View -->
+    <div *ngIf="activeTab === 'sprints'" class="sprints-view">
+      <div class="sprints-header">
+        <h3>Sprint Management</h3>
+        <button class="btn-primary" (click)="openCreateSprintModal()">
+          ➕ Create Sprint
+        </button>
+      </div>
+
+      <div class="sprints-container">
+        <div class="sprints-sidebar">
+          <h4>Sprints</h4>
+          <div *ngIf="sprints.length === 0" class="empty-state">
+            <p>No sprints yet. Create your first sprint!</p>
+          </div>
+          <div class="sprint-list">
+            <div 
+              *ngFor="let sprint of sprints" 
+              class="sprint-item"
+              [class.selected]="selectedSprint?._id === sprint._id"
+              (click)="selectSprint(sprint)">
+              <div class="sprint-item-header">
+                <span class="sprint-name">{{ sprint.name }}</span>
+                <span class="sprint-status" [class]="'status-' + sprint.status">
+                  {{ sprint.status }}
+                </span>
+              </div>
+              <div class="sprint-actions">
+                <button 
+                  *ngIf="sprint.status === 'planned'" 
+                  class="btn-small btn-success"
+                  (click)="startSprint(sprint); $event.stopPropagation()">
+                  ▶️ Start
+                </button>
+                <button 
+                  *ngIf="sprint.status === 'active'" 
+                  class="btn-small btn-warning"
+                  (click)="completeSprint(sprint); $event.stopPropagation()">
+                  ✓ Complete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sprint-detail" *ngIf="selectedSprint">
+          <div class="sprint-detail-header">
+            <h3>{{ selectedSprint.name }}</h3>
+            <span class="sprint-status-large" [class]="'status-' + selectedSprint.status">
+              {{ selectedSprint.status }}
+            </span>
+          </div>
+          
+          <div class="sprint-info">
+            <p *ngIf="selectedSprint.goal"><strong>Goal:</strong> {{ selectedSprint.goal }}</p>
+            <p><strong>Start:</strong> {{ selectedSprint.startDate | date }}</p>
+            <p><strong>End:</strong> {{ selectedSprint.endDate | date }}</p>
+          </div>
+
+          <div class="sprint-tasks">
+            <h4>Tasks in Sprint ({{ sprintTasks.length }})</h4>
+            
+            <div class="task-management">
+              <div class="add-existing-task">
+                <h5>Add Existing Task</h5>
+                <select [(ngModel)]="taskToAdd" class="task-select">
+                  <option value="">Select a task...</option>
+                  <option *ngFor="let task of unassignedTasks" [value]="task._id">
+                    {{ task.title }} ({{ task.status }})
+                  </option>
+                </select>
+                <button 
+                  class="btn-secondary"
+                  [disabled]="!taskToAdd"
+                  (click)="addTaskToSprint()">
+                  Add to Sprint
+                </button>
+              </div>
+
+              <div class="create-new-task">
+                <h5>Create New Task in Sprint</h5>
+                <form [formGroup]="sprintTaskForm" (ngSubmit)="createTaskInSprint()">
+                  <input formControlName="title" placeholder="Task title" />
+                  <select formControlName="status">
+                    <option value="todo">To Do</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="in-review">In Review</option>
+                    <option value="done">Done</option>
+                  </select>
+                  <button type="submit" [disabled]="sprintTaskForm.invalid">Create Task</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="sprint-task-list">
+              <div *ngFor="let task of sprintTasks" class="sprint-task-item">
+                <div class="task-info">
+                  <span class="task-title">{{ task.title }}</span>
+                  <span class="task-status-badge" [class]="'status-' + task.status">
+                    {{ task.status }}
+                  </span>
+                </div>
+                <button 
+                  class="btn-remove"
+                  (click)="removeTaskFromSprint(task)"
+                  title="Remove from sprint">
+                  ✕
+                </button>
+              </div>
+              <div *ngIf="sprintTasks.length === 0" class="no-tasks">
+                No tasks in this sprint yet.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sprint-detail-empty" *ngIf="!selectedSprint && sprints.length > 0">
+          <p>Select a sprint to manage its tasks</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sprint Create Modal -->
+<app-sprint-create-modal 
+  (sprintCreated)="onSprintCreated($event)">
+</app-sprint-create-modal>

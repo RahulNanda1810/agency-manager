@@ -1,0 +1,180 @@
+<div class="organization-detail-container">
+  <div class="org-header">
+    <h2>{{ orgName }}</h2>
+  </div>
+
+  <div class="tabs">
+    <button 
+      class="tab-btn"
+      [class.active]="activeTab === 'clients'"
+      (click)="setActiveTab('clients')">
+      👥 Clients
+    </button>
+    <button 
+      class="tab-btn"
+      [class.active]="activeTab === 'members'"
+      (click)="setActiveTab('members')">
+      🔐 Members
+    </button>
+    <button 
+      *ngIf="isAdmin()"
+      class="tab-btn"
+      [class.active]="activeTab === 'invitations'"
+      (click)="setActiveTab('invitations')">
+      ✉️ Invitations
+      <span *ngIf="invitations.length > 0" class="badge">{{ invitations.length }}</span>
+    </button>
+    <button 
+      *ngIf="isAdmin()"
+      class="tab-btn"
+      [class.active]="activeTab === 'requests'"
+      (click)="setActiveTab('requests')">
+      📨 Requests
+      <span *ngIf="accessRequests.length > 0" class="badge">{{ accessRequests.length }}</span>
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <!-- Clients Tab -->
+    <div *ngIf="activeTab === 'clients'">
+      <app-client-list [orgId]="orgId"></app-client-list>
+    </div>
+
+    <!-- Members Tab -->
+    <div *ngIf="activeTab === 'members'" class="members-view">
+      <div class="members-header">
+        <h3>Organization Members</h3>
+        <span class="member-count">{{ members.length }} member(s)</span>
+      </div>
+
+      <!-- Add Member Form (Admin Only) -->
+      <div *ngIf="isAdmin()" class="add-member-section">
+        <h4>Send Invitation</h4>
+        <div class="add-member-form">
+          <input 
+            type="email" 
+            [(ngModel)]="inviteEmail" 
+            placeholder="Email address"
+            class="email-input"
+            [disabled]="loading"
+          />
+          <select [(ngModel)]="inviteRole" class="role-select" [disabled]="loading">
+            <option value="member">Member</option>
+            <option value="org_admin">Admin</option>
+          </select>
+          <button 
+            class="btn-add"
+            (click)="sendInvitation()"
+            [disabled]="loading || !inviteEmail.trim()">
+            {{ loading ? 'Sending...' : '📧 Send Invite' }}
+          </button>
+        </div>
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="success-message">
+          {{ successMessage }}
+        </div>
+      </div>
+
+      <!-- Members List -->
+      <div class="members-list">
+        <div *ngFor="let member of members" class="member-card">
+          <div class="member-info">
+            <div class="member-avatar">
+              {{ member.email.charAt(0).toUpperCase() }}
+            </div>
+            <div class="member-details">
+              <div class="member-email">{{ member.email }}</div>
+              <div class="member-name" *ngIf="member.name">{{ member.name }}</div>
+              <div class="member-joined">Joined {{ member.joinedAt | date:'shortDate' }}</div>
+            </div>
+          </div>
+          <div class="member-actions">
+            <span class="role-badge" [class.admin]="member.role === 'org_admin'">
+              {{ member.role === 'org_admin' ? '👑 Admin' : '👤 Member' }}
+            </span>
+            <button 
+              *ngIf="isAdmin() && member.role !== 'org_admin'"
+              class="btn-remove"
+              (click)="removeMember(member)">
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="members.length === 0" class="empty-state">
+          <p>No members yet</p>
+
+    <!-- Invitations Tab -->
+    <div *ngIf="activeTab === 'invitations'" class="invitations-view">
+      <h3>Pending Invitations</h3>
+      
+      <div class="invitations-list">
+        <div *ngFor="let invitation of invitations" class="invitation-card">
+          <div class="invitation-info">
+            <div class="invitation-email">{{ invitation.email }}</div>
+            <div class="invitation-role">
+              <span class="role-badge" [class.admin]="invitation.role === 'org_admin'">
+                {{ invitation.role === 'org_admin' ? '👑 Admin' : '👤 Member' }}
+              </span>
+            </div>
+            <div class="invitation-meta">
+              Sent by {{ invitation.invitedBy?.email }} • 
+              Expires {{ invitation.expiresAt | date:'short' }}
+            </div>
+          </div>
+          <button class="btn-copy" (click)="copyInviteLink(invitation)">
+            📋 Copy Link
+          </button>
+        </div>
+
+        <div *ngIf="invitations.length === 0" class="empty-state">
+          <p>No pending invitations</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Access Requests Tab -->
+    <div *ngIf="activeTab === 'requests'" class="requests-view">
+      <h3>Access Requests</h3>
+      
+      <div class="requests-list">
+        <div *ngFor="let request of accessRequests" class="request-card">
+          <div class="request-info">
+            <div class="request-user">
+              <div class="user-avatar">
+                {{ request.userId.email.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div class="user-email">{{ request.userId.email }}</div>
+                <div class="user-name" *ngIf="request.userId.name">{{ request.userId.name }}</div>
+              </div>
+            </div>
+            <div *ngIf="request.message" class="request-message">
+              "{{ request.message }}"
+            </div>
+            <div class="request-date">
+              Requested {{ request.createdAt | date:'short' }}
+            </div>
+          </div>
+          <div class="request-actions">
+            <button class="btn-approve" (click)="respondToRequest(request, 'approve')">
+              ✓ Approve
+            </button>
+            <button class="btn-reject" (click)="respondToRequest(request, 'reject')">
+              ✕ Reject
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="accessRequests.length === 0" class="empty-state">
+          <p>No pending access requests</p>
+        </div>
+      </div>
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

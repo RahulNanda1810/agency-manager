@@ -1,0 +1,20 @@
+/* Cinematic dark background with abstract waves */
+.login-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(120deg, #0a0a23 60%, #1a1a40 100%);
+  overflow: hidden;
+  z-index: 0;
+
+}
+@media (max-width: 400px) {
+  .login-card {
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+    border-radius: 1rem;
+  }
+  .login-title {
+    font-size: 1.1rem;
+  }
+}

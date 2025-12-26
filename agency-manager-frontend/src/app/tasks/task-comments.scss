@@ -1,0 +1,44 @@
+.task-comments-container {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+.task-comments-container h5 {
+  margin-bottom: 0.5rem;
+}
+.task-comments-container ul {
+  list-style: none;
+  padding: 0;
+}
+.task-comments-container li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #eee;
+}
+.task-comments-container .error {
+  color: #c00;
+  margin-bottom: 0.5rem;
+}
+.task-comments-container form {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.task-comments-container input {
+  flex: 1;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.task-comments-container button {
+  padding: 0.25rem 0.75rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.task-comments-container button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}

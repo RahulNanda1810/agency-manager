@@ -1,0 +1,89 @@
+<!-- agency-manager-frontend/src/app/tasks/task-list.html -->
+<div class="task-list-container" *ngIf="projectId">
+  <h3>Tasks</h3>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="filters">
+    <label>Status:
+      <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+        <option value="">All</option>
+        <option value="backlog">Backlog</option>
+        <option value="todo">To Do</option>
+        <option value="in-progress">In Progress</option>
+        <option value="in-review">In Review</option>
+        <option value="done">Done</option>
+      </select>
+    </label>
+    <label>Assigned:
+      <select [(ngModel)]="filterAssignee" (ngModelChange)="applyFilters()">
+        <option value="">All</option>
+        <option *ngFor="let member of members" [value]="member.userId">{{ member.email }}</option>
+      </select>
+    </label>
+  </div>
+  <ul>
+    <li *ngFor="let task of tasks" class="entity-row">
+      <span class="entity-name" (click)="selectTask(task)">
+        <strong>{{ task.title }}</strong> 
+        <span class="status-badge" [class]="'status-' + task.status">{{ getStatusLabel(task.status) }}</span>
+        <span *ngIf="task.sprintName" class="sprint-badge">🏃 {{ task.sprintName }}</span>
+        <span *ngIf="task.assigneeId" class="assignee-badge">👤 {{ getMemberName(task.assigneeId) }}</span>
+      </span>
+      <span class="entity-actions">
+        <button class="icon-btn edit-btn" (click)="startEdit(task); $event.stopPropagation();" title="Edit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1976d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        </button>
+        <button class="icon-btn delete-btn" (click)="deleteTask(task); $event.stopPropagation();" title="Delete">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        </button>
+      </span>
+      
+      <!-- Edit Form -->
+      <div *ngIf="editingTask?._id === task._id" class="edit-form">
+        <form [formGroup]="editTaskForm" (ngSubmit)="updateTask()">
+          <input formControlName="title" placeholder="Task Title" />
+          <select formControlName="status">
+            <option value="backlog">Backlog</option>
+            <option value="todo">To Do</option>
+            <option value="in-progress">In Progress</option>
+            <option value="in-review">In Review</option>
+            <option value="done">Done</option>
+          </select>
+          <select formControlName="assigneeId">
+            <option value="">Unassigned</option>
+            <option *ngFor="let member of members" [value]="member.userId">{{ member.email }}</option>
+          </select>
+          <button type="submit" [disabled]="editTaskForm.invalid || loading">Save</button>
+          <button type="button" (click)="cancelEdit()">Cancel</button>
+        </form>
+      </div>
+      
+      <!-- Comments & Attachments -->
+      <ng-container *ngIf="selectedTask?._id === task._id">
+        <app-task-comments [taskId]="task._id"></app-task-comments>
+        <app-task-attachments [taskId]="task._id"></app-task-attachments>
+      </ng-container>
+    </li>
+  </ul>
+  
+  <h4>Create Task</h4>
+  <form [formGroup]="createTaskForm" (ngSubmit)="createTask()" class="create-task-form">
+    <div class="form-row">
+      <input formControlName="title" placeholder="Task Title" class="input-title" />
+    </div>
+    <div class="form-row">
+      <select formControlName="status" class="input-status">
+        <option value="backlog">📋 Backlog</option>
+        <option value="todo">✅ To Do</option>
+        <option value="in-progress">🔄 In Progress</option>
+        <option value="in-review">👀 In Review</option>
+        <option value="done">✓ Done</option>
+      </select>
+      <select formControlName="assigneeId" class="input-assignee">
+        <option value="">Unassigned</option>
+        <option *ngFor="let member of members" [value]="member.userId">{{ member.email }}</option>
+      </select>
+    </div>
+    <button type="submit" [disabled]="createTaskForm.invalid || loading">Create Task</button>
+  </form>
+</div>

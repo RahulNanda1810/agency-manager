@@ -1,0 +1,12 @@
+<div class="task-comments-container" *ngIf="taskId">
+  <h5>Comments</h5>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <ul>
+    <li *ngFor="let comment of comments">{{ comment.text }}</li>
+  </ul>
+  <form [formGroup]="commentForm" (ngSubmit)="addComment()">
+    <input formControlName="text" placeholder="Add a comment..." />
+    <button type="submit" [disabled]="commentForm.invalid || loading">Add</button>
+  </form>
+</div>

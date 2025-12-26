@@ -1,0 +1,27 @@
+<h1>Dashboard</h1>
+
+<nav>
+  <button (click)="view = 'organizations'">Organizations</button>
+  <button (click)="view = 'clients'">Clients</button>
+  <button (click)="view = 'projects'">Projects</button>
+  <button (click)="view = 'tasks'">Tasks</button>
+  <button (click)="logout()">Logout</button>
+</nav>
+
+<hr />
+
+<div *ngIf="view === 'clients'">
+  <app-clients></app-clients>
+</div>
+
+<div *ngIf="view === 'projects'">
+  <app-projects></app-projects>
+</div>
+
+<div *ngIf="view === 'tasks'">
+  <app-tasks></app-tasks>
+</div>
+
+<div *ngIf="view === 'organizations'">
+  <app-organization-list></app-organization-list>
+</div>

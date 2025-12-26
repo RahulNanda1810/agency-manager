@@ -1,0 +1,25 @@
+.login-container {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+
+  input {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: #e53935;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
