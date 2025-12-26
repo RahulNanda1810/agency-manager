@@ -8,6 +8,7 @@ import { KanbanBoardComponent } from '../tasks/kanban-board';
 import { SprintCreateModalComponent } from '../sprints/sprint-create-modal';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-project-detail',

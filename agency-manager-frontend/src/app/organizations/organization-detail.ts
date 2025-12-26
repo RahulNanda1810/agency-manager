@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ClientListComponent } from '../clients/client-list';
+import { environment } from '../../environments/environment';
 
 type OrgTab = 'clients' | 'members' | 'invitations' | 'requests';
 
